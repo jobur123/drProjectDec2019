@@ -69,7 +69,7 @@ To run the server on linux you need to
  ##### 4. A Certificate folder for the Betfair Certs
 My keys should work, from their current location. 
 In betfairApi.py
-# Update cert paths to your own and correct location
+Update cert paths to your own and correct location
 crtjb = '../Certificate/client-2048.crt'
 keyjb = '../Certificate/client-2048.key'
 
