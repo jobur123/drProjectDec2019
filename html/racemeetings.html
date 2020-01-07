@@ -1,0 +1,112 @@
+<html>
+    <head>
+        <title>Race Meetings</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+       
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    </head>
+    <body>
+        <h2>Upcoming Race Meetings in Ireland and the UK</h2>
+        <div id=1> <button onclick="getMeetings()">Upcoming Race Meetings</button></div>
+        <div id=2>
+            <table class="table" id="meetingTable">
+                <tr>
+                        <th>Race Meeting ID</th>
+                        <th>Race Meeting Name</th>
+                        <th>Countrycode</th>
+                        <th>OpenDate</th>
+                </tr>
+            </table>
+        <div id=3><button onclick="getUpcRaces()">Upcoming Races</button></div>
+        <div id=4>
+            <table class="table" id="raceTable">
+                <tr>
+                        <th>Race Meeting ID</th>
+                        <th>Race Meeting Name</th>
+                        <th>Race ID</th>
+                        <th>Race Name</th>
+                        <th>Race Start Time</th>
+                </tr>
+            </table>
+        </div>
+    </body>
+    <script>
+    function addRMeetingToTable(racemeeting){
+        var tableElement = document.getElementById('meetingTable')
+        var rowElement = tableElement.insertRow(-1)
+        var cell1 = rowElement.insertCell(0);
+        cell1.innerHTML = racemeeting.ID
+        var cell2 = rowElement.insertCell(1);
+        cell2.innerHTML = racemeeting.Name
+        var cell3 = rowElement.insertCell(2);
+        cell3.innerHTML = racemeeting.Country
+        var cell4 = rowElement.insertCell(3);
+        cell4.innerHTML = racemeeting.OpenDate
+    }
+    function addUpcRaceToTable(upcrace){
+        var tableElement = document.getElementById('raceTable')
+        var rowElement = tableElement.insertRow(-1)
+        var cell1 = rowElement.insertCell(0);
+        cell1.innerHTML = upcrace.EID
+        var cell2 = rowElement.insertCell(1);
+        cell2.innerHTML = upcrace.EName
+        var cell3 = rowElement.insertCell(2);
+        cell3.innerHTML = upcrace.RID
+        var cell4 = rowElement.insertCell(3);
+        cell4.innerHTML = upcrace.RNAME
+        var cell5 = rowElement.insertCell(4);
+        cell5.innerHTML = upcrace.RSTARTTIME
+    }
+    function getMeetings(){
+        // delete table rows below 1st line before adding data
+        while(meetingTable.rows.length > 1) {
+            meetingTable.deleteRow(1);
+        }
+        $.ajax({
+            "url": "http://127.0.0.1:5000/events",
+            "method":"GET",
+            "data":"",
+            "dataType": "JSON",
+            "success":function(result){
+                for (x in result){  
+                    var ID = result[x].ID;
+                    var Name = result[x].Name;
+                    var Country = result[x].Country;
+                    var OpenDate = result[x].OpenDate;
+                    racemeeting = {"ID":ID, "Name":Name, "Country":Country, "OpenDate":OpenDate};
+                    addRMeetingToTable(racemeeting);
+                }
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+    }
+    function getUpcRaces(){
+        // delete table rows below 1st line before adding data
+        while(raceTable.rows.length > 1) {
+            raceTable.deleteRow(1);
+        }
+        $.ajax({
+            "url": "http://127.0.0.1:5000/upcraces",
+            "method":"GET",
+            "data":"",
+            "dataType": "JSON",
+            "success":function(result){
+                for (x in result){  
+                    var EID = result[x].EID;
+                    var EName = result[x].EName;
+                    var RID = result[x].RID;
+                    var RNAME = result[x].RNAME;
+                    var RSTARTTIME = result[x].RSTARTTIME;
+                    upcrace = {"EID":EID, "EName":EName, "RID":RID, "RNAME":RNAME, "RSTARTTIME":RSTARTTIME};
+                    addUpcRaceToTable(upcrace);
+                }
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+    }
+    </script>
+</html>

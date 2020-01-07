@@ -1,0 +1,270 @@
+<html>
+    <head>
+        <title>View Horses</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+       
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    </head>
+    <body>
+        <h1>Horses</h1>
+        <div> <button id="showCreateButton" onclick="showCreate()">Create</button></div>
+        <div>
+            <table class="table" id="horseTable">
+                <tr>
+                        <th>id</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Sex</th>
+                        <th>Owner</th>
+                        <th>Trainer</th>
+                        <th>Form</th>
+                        <th>Update</th>
+                        <th>Delete</th>
+                </tr>
+                
+            </table>
+        </div>
+        <div id='createUpdateForm' style="display: none">
+                <h2><span id="createLabel">Create a</span> <span id="updateLabel">update</span> horse</h2>
+                id<input type="number" name="id"/><br/>
+                Name <input type="text" name="Name" /><br/>
+                Age <input type="text" name="Age"/> <br/>
+                Sex <input type="text" name="Sex"/> <br/>
+                Owner <input type="text" name="Owner" /><br/>
+                Trainer <input type="text" name="Trainer"/> <br/>
+                Form <input type="text" name="Form"/> <br/>
+                <span><button id="doCreateButton" onclick="doCreate()">Create</button></span>
+                <span><button id="doUpdateButton" onclick="doUpdate()">Update</button></span>
+        </div>
+    </body>
+    <script>
+    function showCreate(){
+        document.getElementById('showCreateButton').style.display="none"
+        document.getElementById('horseTable').style.display="none"
+        document.getElementById('createUpdateForm').style.display="block"
+
+        document.getElementById('createLabel').style.display="inline"
+        document.getElementById('updateLabel').style.display="none"
+
+        document.getElementById('doCreateButton').style.display="block"
+        document.getElementById('doUpdateButton').style.display="none"
+
+    }
+    function showViewAll(){
+        document.getElementById('showCreateButton').style.display="block"
+        document.getElementById('horseTable').style.display="block"
+        document.getElementById('createUpdateForm').style.display="none"
+    }
+    function showUpdate(buttonElement){
+        document.getElementById('showCreateButton').style.display="none"
+        document.getElementById('horseTable').style.display="none"
+        document.getElementById('createUpdateForm').style.display="block"
+
+        document.getElementById('createLabel').style.display="none"
+        document.getElementById('updateLabel').style.display="inline"
+
+        document.getElementById('doCreateButton').style.display="none"
+        document.getElementById('doUpdateButton').style.display="block"
+
+
+        var rowElement = buttonElement.parentNode.parentNode
+        // these is a way of finding the closest <tr> which would safer, closest()
+        
+        var horse = gethorseFromRow(rowElement)
+        populateFormWithhorse(horse)
+    }
+    function doCreate(){
+        var form = document.getElementById('createUpdateForm')
+
+        var horse = {}
+       
+        horse.id = form.querySelector('input[name="id"]').value
+        horse.Name = form.querySelector('input[name="Name"]').value
+        horse.Age = form.querySelector('input[name="Age"]').value
+        horse.Sex = form.querySelector('input[name="Sex"]').value
+        horse.Owner = form.querySelector('input[name="Owner"]').value
+        horse.Trainer = form.querySelector('input[name="Trainer"]').value
+        horse.Form = form.querySelector('input[name="Form"]').value
+        console.log(JSON.stringify(horse))
+        createhorseAjax(horse)
+        
+        
+    }
+    function doUpdate(){
+        var horse = gethorseFromForm();
+        var rowElement = document.getElementById(horse.id);
+        updatehorseAjax(horse);
+        sethorseInRow(rowElement,horse);
+       
+        clearForm();
+        showViewAll();
+    }
+    function doDelete(r){
+        var tableElement = document.getElementById('horseTable');
+        var rowElement = r.parentNode.parentNode;
+        var index = rowElement.rowIndex;
+        deletehorseAjax(rowElement.getAttribute("id"));
+        tableElement.deleteRow(index);
+    }
+    function addhorseToTable(horse){
+        var tableElement = document.getElementById('horseTable')
+        var rowElement = tableElement.insertRow(-1)
+        rowElement.setAttribute('id',horse.id)
+        var cell1 = rowElement.insertCell(0);
+        cell1.innerHTML = horse.id
+        var cell2 = rowElement.insertCell(1);
+        cell2.innerHTML = horse.Name
+        var cell3 = rowElement.insertCell(2);
+        cell3.innerHTML = horse.Age
+        var cell4 = rowElement.insertCell(3);
+        cell4.innerHTML = horse.Sex
+        var cell5 = rowElement.insertCell(4);
+        cell5.innerHTML = horse.Owner
+        var cell6 = rowElement.insertCell(5);
+        cell6.innerHTML = horse.Trainer
+        var cell7 = rowElement.insertCell(6);
+        cell7.innerHTML = horse.Form
+        var cell8 = rowElement.insertCell(7);
+        cell8.innerHTML = '<button onclick="showUpdate(this)">Update</button>'
+        var cell9 = rowElement.insertCell(8);
+        cell9.innerHTML = '<button onclick=doDelete(this)>delete</button>'
+
+    }
+
+    function clearForm(){
+        var form = document.getElementById('createUpdateForm')
+
+        form.querySelector('input[name="id"]').value=''
+        form.querySelector('input[name="Name"]').value=''
+        form.querySelector('input[name="Age"]').value=''
+        form.querySelector('input[name="Sex"]').value=''
+        form.querySelector('input[name="Owner"]').value=''
+        form.querySelector('input[name="Trainer"]').value=''
+        form.querySelector('input[name="Form"]').value=''
+    }
+    function gethorseFromRow(rowElement){
+        var horse ={}
+        horse.id  = rowElement.getAttribute('id')
+        horse.Name = rowElement.cells[1].firstChild.textContent
+        horse.Age = rowElement.cells[2].firstChild.textContent
+        horse.Sex = parseInt(rowElement.cells[3].firstChild.textContent,10)
+        horse.Owner = rowElement.cells[4].firstChild.textContent
+        horse.Trainer = rowElement.cells[5].firstChild.textContent
+        horse.Form = parseInt(rowElement.cells[6].firstChild.textContent,10)
+        return horse
+    }
+    function sethorseInRow(rowElement, horse){
+        rowElement.cells[0].firstChild.textContent= horse.id  
+        rowElement.cells[1].firstChild.textContent= horse.Name 
+        rowElement.cells[2].firstChild.textContent= horse.Age
+        rowElement.cells[3].firstChild.textContent= horse.Sex
+        rowElement.cells[4].firstChild.textContent= horse.Owner 
+        rowElement.cells[5].firstChild.textContent= horse.Trainer
+        rowElement.cells[6].firstChild.textContent= horse.Form
+    }
+    function populateFormWithhorse(horse){
+        var form = document.getElementById('createUpdateForm')
+        form.querySelector('input[name="id"]').disabled = true
+
+        form.querySelector('input[name="id"]').value  = horse.id
+        form.querySelector('input[name="Name"]').value= horse.Name
+        form.querySelector('input[name="Age"]').value= horse.Age
+        form.querySelector('input[name="Sex"]').value= horse.Sex
+        form.querySelector('input[name="Owner"]').value= horse.Owner
+        form.querySelector('input[name="Trainer"]').value= horse.Trainer
+        form.querySelector('input[name="Form"]').value= horse.Form
+        return horse
+    }
+    function gethorseFromForm(){
+        var form = document.getElementById('createUpdateForm')
+        var horse = {}
+        horse.id = form.querySelector('input[name="id"]').value
+        horse.Name = form.querySelector('input[name="Name"]').value
+        horse.Age = form.querySelector('input[name="Age"]').value
+        horse.Sex = form.querySelector('input[name="Sex"]').value
+        horse.Owner = form.querySelector('input[name="Owner"]').value 
+        horse.Trainer = form.querySelector('input[name="Trainer"]').value
+        horse.Form = form.querySelector('input[name="Form"]').value
+        console.log(JSON.stringify(horse))
+        return horse
+    }
+    function getAllAjax(){
+        $.ajax({
+            "url": "http://127.0.0.1:5000/horses",
+            "method":"GET",
+            "data":"",
+            "dataType": "JSON",
+            "success":function(result){
+                //console.log(result);
+                for (horse of result){
+                    addhorseToTable(horse);
+                }
+                
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+
+    }
+    function createhorseAjax(horse){
+        //var horse = {???}
+        console.log(JSON.stringify(horse));
+        $.ajax({
+            "url": "http://127.0.0.1:5000/horses",
+            "method":"POST",
+            "data":JSON.stringify(horse),
+            "dataType": "JSON",
+            contentType: "application/json; charset=utf-8",
+            "success":function(result){
+                //console.log(result);
+                horse.id = result.id
+                addhorseToTable(horse)
+                clearForm()
+                showViewAll()
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+    }
+    function updatehorseAjax(horse){
+        console.log(JSON.stringify(horse));
+        $.ajax({
+            "url": "http://127.0.0.1:5000/horses/"+encodeURI(horse.id),
+            "method":"PUT",
+            "data":JSON.stringify(horse),
+            "dataType": "JSON",
+            contentType: "application/json; charset=utf-8",
+            "success":function(result){
+               // console.log(result);
+                  
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+    }
+    function deletehorseAjax(id){
+        
+        //console.log(JSON.stringify('deleting '+id));
+        $.ajax({
+            "url": "http://127.0.0.1:5000/horses/"+encodeURI(id),
+            "method":"DELETE",
+            "data":"",
+            "dataType": "JSON",
+            contentType: "application/json; charset=utf-8",
+            "success":function(result){
+                //console.log(result);
+                  
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+    }
+    getAllAjax();
+  
+
+    </script>
+</html>

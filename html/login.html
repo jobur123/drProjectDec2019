@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+  
+  	<!-- 	John Burke Project
+			Module: Data Representation
+	-->
+  
+  
+  
+  <head>
+    <!-- added to resolve error on webpage -->
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    
+    <!-- set the webpage to the screen width of device opening it -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+     <style>
+        * {box-sizing: border-box}
+
+
+		<!-- navbar styling - use the full width of the screen -->
+        .navbar {
+         	width: 100%;
+			background-color: #33cc33 ;
+			overflow: fixed;
+		 }
+  
+		.navbar a {
+  			float: left;
+  			padding: 12px;
+  			color: black;
+  			text-decoration: none;
+  			font-size: 17px;
+  			width: 50%; /* Four links of equal widths */
+  			text-align: center;
+		}
+
+		.navbar a:hover {
+  			background-color: silver ;
+		}
+
+		.navbar a.active {
+  			font-weight: bold
+		}
+		    
+       	/* Set a style for all buttons */
+		button {
+  			padding: 14px 20px;
+  			margin: 8px 0;
+  			cursor: pointer;
+  			width: 100px;
+			}
+
+		/* Set style for body */
+		body{
+		 	text-shadow: #FC0 1px 0 20px;;
+		 	color: green;
+		 	}
+		
+		/*Centre headings and paragraphs*/
+		H1 { text-align: center }
+
+	</style>
+	
+
+	</head>
+	<body>
+		
+		<!-- login form: input types password and text for authentication - action  -->
+		<form name="formLogin">
+			<div class="container">	
+    			<label for="uname"><b>Username</b></label>
+    			<input type="text" placeholder="Enter Username" name="uname" required id="loguname">
+    			<label for="psw"><b>Password</b></label>
+				<label for="email"><b>Email</b></label>
+    			<input type="email" placeholder="Enter Email" name="email" required>	
+    			<input type="password" placeholder="Enter Password" name="psw" required id="logpw">
+    			<button onclick="logIn()" type="submit">Login</button>
+			</div>
+		</form>	
+		
+		<h1>Welcome to HorseRace Tracker</h1>
+		<p>Use this site to keep up to date with Irish and UK racing.</p>
+		<p>On the racemeetings page you can view the upcoming race meetings for the next 30 days as and when they are available on Betfair. Click the upcoming race meetings button to view.</p>
+    <p>On the racemeetings page you can also view the upcoming races listed chronologically. The races included are those listed on Betfair for the race meetings above. Click the Upcoming Races button to view.</p>
+    <p>On the horseviewer page you can see info on all the horses stored in our database. The data is stored in our database from betfair. You can update it manually using the buttons provided.</p>
+		<p>Unfortunately the races tracker with predictions is still under construction. Check back soon it will be available shortly !!</p>
+
+				
+    <img src="images/galway.jpg" alt="Galway Races" width="100%">
+		
+	
+
+	</body>
+	<script>
+	
+			/*
+		Fucntions to register or add a user and to login. Values are hardcoded into the arrays for unsername password
+		and email below
+		*/
+		
+		var unames = ["Andrew", "johnB", "mikeC"];
+		var pws = ["AndrewB", "john1", "mike1"];
+		var mails = ["andrewb@gmail.com", "john@gmail.com", "mike@gmail.com"];
+		
+		// login function
+		function logIn(){
+			// assign values from login form above variables
+			userlog = document.getElementById("loguname").value
+			pwlog = document.getElementById("logpw").value
+			
+			//If user exists, get index from the array, if user not in the array inform user
+			var arrayIndex = unames.indexOf(userlog)
+			if (arrayIndex != -1){
+				// check passowrd if incorrect alert user else open homepage
+				if ( pws[arrayIndex]!= pwlog){
+					alert("password incorrect please try again")
+					}
+				// open homepage
+				else {window.open ("./home.html")}				
+				}
+			
+			else{
+				alert("Username does not exist please check user and try login again")
+				}
+			}
+</script>
+
+</html> 
